@@ -13,7 +13,7 @@
     "build": "node-gyp build && tsc",
     "start": "node --napi-modules ."
   },
-  "types": "./types/index.d.ts",
+  "types": "index.d.ts",
   "gypfile": true,
   "author": "Sebastian Langer <sl@scn.cx>",
   "license": "MIT"
