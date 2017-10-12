@@ -1,0 +1,20 @@
+{
+  "name": "@glaced/glfw",
+  "version": "0.1.0",
+  "description": "",
+  "main": "dist/index.js",
+  "dependencies": {
+    "bindings": "^1.2.1"
+  },
+  "devDependencies": {
+    "typescript": "^2.3.4"
+  },
+  "scripts": {
+    "build": "node-gyp build && tsc",
+    "start": "node --napi-modules ."
+  },
+  "types": "./types/index.d.ts",
+  "gypfile": true,
+  "author": "Sebastian Langer <sl@scn.cx>",
+  "license": "MIT"
+}
