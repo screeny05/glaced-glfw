@@ -712,7 +712,7 @@ void Init(napi_env env, napi_value exports, napi_value module, void* priv) {
         DECLARE_NAPI_PROPERTY("swapBuffers", napi_swapBuffers)
     };
 
-    NAPI_CALL_RETURN_VOID(env, napi_define_properties(env, exports, 48, properties));
+    NAPI_CALL_RETURN_VOID(env, napi_define_properties(env, exports, 50, properties));
 
 
 
