@@ -13,6 +13,22 @@ export interface GLFWVideoMode extends GLFWObject {
     refreshRate: number;
 }
 
+export interface GLFWPosition extends GLFWObject {
+    xpos: number;
+    ypos: number;
+}
+
+export interface GLFWVersion extends GLFWObject {
+    major: number;
+    minor: number;
+    rev: number;
+}
+
+export interface GLFWSize extends GLFWObject {
+    width: number;
+    height: number;
+}
+
 export interface GLFW {
     readonly makeContextCurrent: (_window: GLFWWindow) => void;
     readonly getCurrentContext: () => number;
@@ -21,13 +37,13 @@ export interface GLFW {
     readonly getProcAddress: (procname: string) => number;
     readonly init: () => boolean;
     readonly terminate: () => void;
-    readonly getVersion: () => { major: number, minor: number, rev: number };
+    readonly getVersion: () => GLFWVersion;
     readonly getVersionString: () => string;
     readonly setErrorCallback: (cb: (err: number, description: string) => void) => void;
     readonly createStandardCursor: (shape: number) => number;
     readonly destroyCursor: (_cursor: number) => void;
     readonly getClipboardString: (_window: GLFWWindow) => string;
-    readonly getCursorPos: (_window: GLFWWindow) => { xpos: number, ypos: number };
+    readonly getCursorPos: (_window: GLFWWindow) => GLFWPosition;
     readonly getInputMode: (_window: GLFWWindow, mode: number) => number;
     readonly getJoystickAxes: (joy: number) => number[];
     readonly getJoystickButtons: (joy: number) => number[];
@@ -50,14 +66,15 @@ export interface GLFW {
     readonly getMonitors: () => GLFWMonitor[];
     readonly getPrimaryMonitor: () => GLFWMonitor;
     readonly getVideoModes: (_monitor: GLFWMonitor) => GLFWVideoMode[];
+    readonly getVideoMode: (_monitor: GLFWMonitor) => GLFWVideoMode;
     readonly windowHint: (hint: number, value: number) => void;
     readonly createWindow: (width: number, height: number, title: string, _monitor?: GLFWMonitor, _share?: GLFWWindow) => number;
     readonly destroyWindow: (_window: GLFWWindow) => void;
     readonly windowShouldClose: (_window: GLFWWindow) => boolean;
     readonly setWindowTitle: (_window: GLFWWindow, title: string) => void;
-    readonly getWindowSize: (_window: GLFWWindow) => { width: number, height: number };
+    readonly getWindowSize: (_window: GLFWWindow) => GLFWSize;
     readonly setWindowSize: (_window: GLFWWindow, width: number, height: number) => void;
-    readonly getFramebufferSize: (_window: GLFWWindow) => { width: number, height: number };
+    readonly getFramebufferSize: (_window: GLFWWindow) => GLFWSize;
     readonly setWindowSizeCallback: (_window: GLFWWindow, cb: (_window: GLFWWindow, width: number, height: number) => void) => void;
     readonly setWindowCloseCallback: (_window: GLFWWindow, cb: (_window: GLFWWindow) => void) => void;
     readonly setFramebufferSizeCallback: (_window: GLFWWindow, cb: (_window: GLFWWindow, width: number, height: number) => void) => void;
