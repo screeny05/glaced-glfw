@@ -1,10 +1,6 @@
-#define EXPORT_NAPI_METHOD(name, func) \
-    desc = DECLARE_NAPI_PROPERTY(name, func); \
-    NAPI_CALL_RETURN_VOID(env, napi_define_properties(env, exports, 1, &desc))
-
 #define EXPORT_NAPI_CONST_NUMBER(name, value) \
-    NAPI_CALL_RETURN_VOID(env, napi_create_number(env, value, &val)); \
-    NAPI_CALL_RETURN_VOID(env, napi_set_named_property(env, exports, name, val));
+    NAPI_CALL(env, napi_create_int64(env, value, &val)); \
+    NAPI_CALL(env, napi_set_named_property(env, exports, name, val));
 
 #define EXPORT_NAPI_CONST_GLFW(name) \
     EXPORT_NAPI_CONST_NUMBER(#name, GLFW_##name);
@@ -17,40 +13,33 @@
     NAPI_CALL(env, getValueCall); \
     return returnValue;
 
-#define RETURN_NAPI_GL_ACTIVE_INFO(name, size, type) \
+#define RETURN_NAPI_2NUMBER_OBJECT(a, b, napiCreateCall) \
     napi_value val; \
     napi_value returnValue; \
     NAPI_CALL(env, napi_create_object(env, &returnValue)); \
-    NAPI_CALL(env, napi_create_string_utf8(env, name, -1, &val)); \
-    NAPI_CALL(env, napi_set_named_property(env, returnValue, "name", val)); \
-    NAPI_CALL(env, napi_create_number(env, size, &val)); \
-    NAPI_CALL(env, napi_set_named_property(env, returnValue, "size", val)); \
-    NAPI_CALL(env, napi_create_number(env, type, &val)); \
-    NAPI_CALL(env, napi_set_named_property(env, returnValue, "type", val)); \
-    return returnValue;
-
-#define RETURN_NAPI_2NUMBER_OBJECT(a, b) \
-    napi_value val; \
-    napi_value returnValue; \
-    NAPI_CALL(env, napi_create_object(env, &returnValue)); \
-    NAPI_CALL(env, napi_create_number(env, a, &val)); \
+    NAPI_CALL(env, napiCreateCall(env, a, &val)); \
     NAPI_CALL(env, napi_set_named_property(env, returnValue, #a, val)); \
-    NAPI_CALL(env, napi_create_number(env, b, &val)); \
+    NAPI_CALL(env, napiCreateCall(env, b, &val)); \
     NAPI_CALL(env, napi_set_named_property(env, returnValue, #b, val)); \
     return returnValue;
 
-#define RETURN_NAPI_ARRAY_NUMBER(array, count) \
+#define RETURN_NAPI_ARRAY_NUMBER(array, count, napiCreateCall) \
     napi_value arrayValue; \
     napi_value singleValue; \
     napi_create_array_with_length(env, count, &arrayValue); \
     for(int i = 0; i < count; i++){ \
-        NAPI_CALL(env, napi_create_number(env, array[i], &singleValue)); \
+        NAPI_CALL(env, napiCreateCall(env, array[i], &singleValue)); \
         NAPI_CALL(env, napi_set_element(env, arrayValue, i, singleValue)); \
     } \
     return arrayValue;
 
 #define RETURN_NAPI_UNDEFINED() RETURN_NAPI_BASE(napi_get_undefined(env, &returnValue))
 #define RETURN_NAPI_NUMBER(val) RETURN_NAPI_BASE(napi_create_number(env, val, &returnValue))
+#define RETURN_NAPI_INT32(val) RETURN_NAPI_BASE(napi_create_int32(env, val, &returnValue))
+#define RETURN_NAPI_UINT32(val) RETURN_NAPI_BASE(napi_create_uint32(env, val, &returnValue))
+#define RETURN_NAPI_INT64(val) RETURN_NAPI_BASE(napi_create_int64(env, val, &returnValue))
+#define RETURN_NAPI_DOUBLE(val) RETURN_NAPI_BASE(napi_create_double(env, val, &returnValue))
+#define RETURN_NAPI_BOOL(val) RETURN_NAPI_BASE(napi_get_boolean(env, val, &returnValue))
 #define RETURN_NAPI_BOOL(val) RETURN_NAPI_BASE(napi_get_boolean(env, val, &returnValue))
 #define RETURN_NAPI_STRING(val) RETURN_NAPI_BASE(napi_create_string_utf8(env, val, -1, &returnValue));
 

@@ -30,7 +30,7 @@ DECLARE_NAPI_METHOD(napi_makeContextCurrent){
 }
 
 DECLARE_NAPI_METHOD(napi_getCurrentContext){
-    RETURN_NAPI_NUMBER((uint64_t)glfwGetCurrentContext());
+    RETURN_NAPI_INT64((uint64_t)glfwGetCurrentContext());
 }
 
 DECLARE_NAPI_METHOD(napi_swapInterval){
@@ -52,7 +52,7 @@ DECLARE_NAPI_METHOD(napi_getProcAddress){
     GET_NAPI_PARAMS_INFO(1);
     GET_NAPI_PARAM_STRING(procname, 0);
 
-    RETURN_NAPI_NUMBER((uint64_t)glfwGetProcAddress(procname));
+    RETURN_NAPI_INT64((uint64_t)glfwGetProcAddress(procname));
 }
 
 
@@ -78,13 +78,13 @@ DECLARE_NAPI_METHOD(napi_getVersion){
 
     NAPI_CALL(env, napi_create_object(env, &returnValue));
 
-    NAPI_CALL(env, napi_create_number(env, major, &val));
+    NAPI_CALL(env, napi_create_int32(env, major, &val));
     NAPI_CALL(env, napi_set_named_property(env, returnValue, "major", val));
 
-    NAPI_CALL(env, napi_create_number(env, minor, &val));
+    NAPI_CALL(env, napi_create_int32(env, minor, &val));
     NAPI_CALL(env, napi_set_named_property(env, returnValue, "minor", val));
 
-    NAPI_CALL(env, napi_create_number(env, rev, &val));
+    NAPI_CALL(env, napi_create_int32(env, rev, &val));
     NAPI_CALL(env, napi_set_named_property(env, returnValue, "rev", val));
 
     return returnValue;
@@ -96,7 +96,7 @@ DECLARE_NAPI_METHOD(napi_getVersionString){
 
 void napiGlfwErrorCallback(int error, const char* description){
     napi_value callbackArgs[2];
-    NAPI_CALL_RETURN_VOID(_env, napi_create_number(_env, error, &callbackArgs[0]));
+    NAPI_CALL_RETURN_VOID(_env, napi_create_int32(_env, error, &callbackArgs[0]));
     NAPI_CALL_RETURN_VOID(_env, napi_create_string_utf8(_env, description, -1, &callbackArgs[1]));
     printf("Error called: %d %s\n", error, description);
 
@@ -117,7 +117,7 @@ DECLARE_NAPI_METHOD(napi_setErrorCallback){
 
 DECLARE_NAPI_METHOD(napi_getTime){
     double time = glfwGetTime();
-    RETURN_NAPI_NUMBER(time);
+    RETURN_NAPI_DOUBLE(time);
 }
 
 DECLARE_NAPI_METHOD(napi_createStandardCursor){
@@ -125,7 +125,7 @@ DECLARE_NAPI_METHOD(napi_createStandardCursor){
     GET_NAPI_PARAM_INT64(shape, 0);
 
     GLFWcursor* cursor = glfwCreateStandardCursor(shape);
-    RETURN_NAPI_NUMBER((uint64_t)cursor);
+    RETURN_NAPI_INT64((uint64_t)cursor);
 }
 
 DECLARE_NAPI_METHOD(napi_destroyCursor){
@@ -153,7 +153,7 @@ DECLARE_NAPI_METHOD(napi_getCursorPos){
     double xpos;
     double ypos;
     glfwGetCursorPos(window, &xpos, &ypos);
-    RETURN_NAPI_2NUMBER_OBJECT(xpos, ypos);
+    RETURN_NAPI_2NUMBER_OBJECT(xpos, ypos, napi_create_double);
 }
 
 DECLARE_NAPI_METHOD(napi_getInputMode){
@@ -162,7 +162,7 @@ DECLARE_NAPI_METHOD(napi_getInputMode){
     GET_NAPI_PARAM_INT64(mode, 1);
     GLFWwindow* window = (GLFWwindow*)_window;
 
-    RETURN_NAPI_NUMBER(glfwGetInputMode(window, mode));
+    RETURN_NAPI_INT32(glfwGetInputMode(window, mode));
 }
 
 DECLARE_NAPI_METHOD(napi_getJoystickAxes){
@@ -174,7 +174,7 @@ DECLARE_NAPI_METHOD(napi_getJoystickAxes){
 
     values = glfwGetJoystickAxes(joy, &count);
 
-    RETURN_NAPI_ARRAY_NUMBER(values, count);
+    RETURN_NAPI_ARRAY_NUMBER(values, count, napi_create_double);
 }
 
 DECLARE_NAPI_METHOD(napi_getJoystickButtons){
@@ -186,7 +186,7 @@ DECLARE_NAPI_METHOD(napi_getJoystickButtons){
 
     values = glfwGetJoystickButtons(joy, &count);
 
-    RETURN_NAPI_ARRAY_NUMBER(values, count);
+    RETURN_NAPI_ARRAY_NUMBER(values, count, napi_create_uint32);
 }
 
 DECLARE_NAPI_METHOD(napi_getJoystickName){
@@ -202,7 +202,7 @@ DECLARE_NAPI_METHOD(napi_getKey){
     GET_NAPI_PARAM_INT64(key, 1);
     GLFWwindow* window = (GLFWwindow*)_window;
 
-    RETURN_NAPI_NUMBER(glfwGetKey(window, key));
+    RETURN_NAPI_INT32(glfwGetKey(window, key));
 }
 
 DECLARE_NAPI_METHOD(napi_getKeyName){
@@ -219,15 +219,15 @@ DECLARE_NAPI_METHOD(napi_getMouseButton){
     GET_NAPI_PARAM_INT64(button, 1);
     GLFWwindow* window = (GLFWwindow*)_window;
 
-    RETURN_NAPI_NUMBER(glfwGetMouseButton(window, button));
+    RETURN_NAPI_INT32(glfwGetMouseButton(window, button));
 }
 
 DECLARE_NAPI_METHOD(napi_getTimerFrequency){
-    RETURN_NAPI_NUMBER(glfwGetTimerFrequency());
+    RETURN_NAPI_INT64(glfwGetTimerFrequency());
 }
 
 DECLARE_NAPI_METHOD(napi_getTimerValue){
-    RETURN_NAPI_NUMBER(glfwGetTimerValue());
+    RETURN_NAPI_INT64(glfwGetTimerValue());
 }
 
 DECLARE_NAPI_METHOD(napi_joystickPresent){
@@ -274,9 +274,9 @@ DECLARE_NAPI_METHOD(napi_setCursorPos){
 
 void napiGlfwCursorPosCallback(GLFWwindow* window, double xpos, double ypos){
     napi_value callbackArgs[3];
-    NAPI_CALL_RETURN_VOID(_env, napi_create_number(_env, (uint64_t)window, &callbackArgs[0]));
-    NAPI_CALL_RETURN_VOID(_env, napi_create_number(_env, xpos, &callbackArgs[1]));
-    NAPI_CALL_RETURN_VOID(_env, napi_create_number(_env, ypos, &callbackArgs[2]));
+    NAPI_CALL_RETURN_VOID(_env, napi_create_int64(_env, (uint64_t)window, &callbackArgs[0]));
+    NAPI_CALL_RETURN_VOID(_env, napi_create_double(_env, xpos, &callbackArgs[1]));
+    NAPI_CALL_RETURN_VOID(_env, napi_create_double(_env, ypos, &callbackArgs[2]));
 
     CALL_NAPI_FUNCTION_GLFW_CALLBACK(_cursorPosCallbackReference, 3, callbackArgs);
 }
@@ -307,11 +307,11 @@ DECLARE_NAPI_METHOD(napi_setInputMode){
 
 void napiGlfwKeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods){
     napi_value callbackArgs[5];
-    NAPI_CALL_RETURN_VOID(_env, napi_create_number(_env, (uint64_t)window, &callbackArgs[0]));
-    NAPI_CALL_RETURN_VOID(_env, napi_create_number(_env, key, &callbackArgs[1]));
-    NAPI_CALL_RETURN_VOID(_env, napi_create_number(_env, scancode, &callbackArgs[2]));
-    NAPI_CALL_RETURN_VOID(_env, napi_create_number(_env, action, &callbackArgs[3]));
-    NAPI_CALL_RETURN_VOID(_env, napi_create_number(_env, mods, &callbackArgs[4]));
+    NAPI_CALL_RETURN_VOID(_env, napi_create_int64(_env, (uint64_t)window, &callbackArgs[0]));
+    NAPI_CALL_RETURN_VOID(_env, napi_create_int32(_env, key, &callbackArgs[1]));
+    NAPI_CALL_RETURN_VOID(_env, napi_create_int32(_env, scancode, &callbackArgs[2]));
+    NAPI_CALL_RETURN_VOID(_env, napi_create_int32(_env, action, &callbackArgs[3]));
+    NAPI_CALL_RETURN_VOID(_env, napi_create_int32(_env, mods, &callbackArgs[4]));
 
     CALL_NAPI_FUNCTION_GLFW_CALLBACK(_keyCallbackReference, 5, callbackArgs);
 }
@@ -330,10 +330,10 @@ DECLARE_NAPI_METHOD(napi_setKeyCallback){
 
 void napiGlfwMouseButtonCallback(GLFWwindow* window, int button, int action, int mods){
     napi_value callbackArgs[4];
-    NAPI_CALL_RETURN_VOID(_env, napi_create_number(_env, (uint64_t)window, &callbackArgs[0]));
-    NAPI_CALL_RETURN_VOID(_env, napi_create_number(_env, button, &callbackArgs[1]));
-    NAPI_CALL_RETURN_VOID(_env, napi_create_number(_env, action, &callbackArgs[2]));
-    NAPI_CALL_RETURN_VOID(_env, napi_create_number(_env, mods, &callbackArgs[3]));
+    NAPI_CALL_RETURN_VOID(_env, napi_create_int64(_env, (uint64_t)window, &callbackArgs[0]));
+    NAPI_CALL_RETURN_VOID(_env, napi_create_int32(_env, button, &callbackArgs[1]));
+    NAPI_CALL_RETURN_VOID(_env, napi_create_int32(_env, action, &callbackArgs[2]));
+    NAPI_CALL_RETURN_VOID(_env, napi_create_int32(_env, mods, &callbackArgs[3]));
 
     CALL_NAPI_FUNCTION_GLFW_CALLBACK(_mouseButtonCallbackReference, 4, callbackArgs);
 }
@@ -389,7 +389,7 @@ DECLARE_NAPI_METHOD(napi_createWindow){
         share = (GLFWwindow*)_share;
     }
 
-    RETURN_NAPI_NUMBER((uint64_t)glfwCreateWindow(width, height, title, monitor, share));
+    RETURN_NAPI_INT64((uint64_t)glfwCreateWindow(width, height, title, monitor, share));
 }
 
 DECLARE_NAPI_METHOD(napi_destroyWindow){
@@ -428,7 +428,7 @@ DECLARE_NAPI_METHOD(napi_getWindowSize){
     int height;
 
     glfwGetWindowSize(window, &width, &height);
-    RETURN_NAPI_2NUMBER_OBJECT(width, height);
+    RETURN_NAPI_2NUMBER_OBJECT(width, height, napi_create_int32);
 }
 
 DECLARE_NAPI_METHOD(napi_setWindowSize){
@@ -451,14 +451,14 @@ DECLARE_NAPI_METHOD(napi_getFramebufferSize){
     int height;
 
     glfwGetFramebufferSize(window, &width, &height);
-    RETURN_NAPI_2NUMBER_OBJECT(width, height);
+    RETURN_NAPI_2NUMBER_OBJECT(width, height, napi_create_int32);
 }
 
 void napiGlfwWindowSizeCallback(GLFWwindow* window, int width, int height){
     napi_value callbackArgs[3];
-    NAPI_CALL_RETURN_VOID(_env, napi_create_number(_env, (uint64_t)window, &callbackArgs[0]));
-    NAPI_CALL_RETURN_VOID(_env, napi_create_number(_env, width, &callbackArgs[1]));
-    NAPI_CALL_RETURN_VOID(_env, napi_create_number(_env, height, &callbackArgs[2]));
+    NAPI_CALL_RETURN_VOID(_env, napi_create_int64(_env, (uint64_t)window, &callbackArgs[0]));
+    NAPI_CALL_RETURN_VOID(_env, napi_create_int32(_env, width, &callbackArgs[1]));
+    NAPI_CALL_RETURN_VOID(_env, napi_create_int32(_env, height, &callbackArgs[2]));
 
     CALL_NAPI_FUNCTION_GLFW_CALLBACK(_windowSizeCallbackReference, 3, callbackArgs);
 }
@@ -477,7 +477,7 @@ DECLARE_NAPI_METHOD(napi_setWindowSizeCallback){
 
 void napiGlfwWindowCloseCallback(GLFWwindow* window){
     napi_value callbackArgs[1];
-    NAPI_CALL_RETURN_VOID(_env, napi_create_number(_env, (uint64_t)window, &callbackArgs[0]));
+    NAPI_CALL_RETURN_VOID(_env, napi_create_int64(_env, (uint64_t)window, &callbackArgs[0]));
 
     CALL_NAPI_FUNCTION_GLFW_CALLBACK(_windowCloseCallbackReference, 1, callbackArgs);
 }
@@ -496,9 +496,9 @@ DECLARE_NAPI_METHOD(napi_setWindowCloseCallback){
 
 void napiGlfwFramebufferSizeCallback(GLFWwindow* window, int width, int height){
     napi_value callbackArgs[3];
-    NAPI_CALL_RETURN_VOID(_env, napi_create_number(_env, (uint64_t)window, &callbackArgs[0]));
-    NAPI_CALL_RETURN_VOID(_env, napi_create_number(_env, width, &callbackArgs[1]));
-    NAPI_CALL_RETURN_VOID(_env, napi_create_number(_env, height, &callbackArgs[2]));
+    NAPI_CALL_RETURN_VOID(_env, napi_create_int64(_env, (uint64_t)window, &callbackArgs[0]));
+    NAPI_CALL_RETURN_VOID(_env, napi_create_int32(_env, width, &callbackArgs[1]));
+    NAPI_CALL_RETURN_VOID(_env, napi_create_int32(_env, height, &callbackArgs[2]));
 
     CALL_NAPI_FUNCTION_GLFW_CALLBACK(_framebufferSizeCallbackReference, 3, callbackArgs);
 }
@@ -538,7 +538,7 @@ DECLARE_NAPI_METHOD(napi_getMonitors){
     napi_value singleValue;
     napi_create_array_with_length(env, monitorCount, &arrayValue);
     for(int i = 0; i < monitorCount; i++){
-        NAPI_CALL(env, napi_create_number(env, (uint64_t)monitors[i], &singleValue));
+        NAPI_CALL(env, napi_create_int64(env, (uint64_t)monitors[i], &singleValue));
         NAPI_CALL(env, napi_set_element(env, arrayValue, i, singleValue));
     }
     return arrayValue;
@@ -546,24 +546,24 @@ DECLARE_NAPI_METHOD(napi_getMonitors){
 
 DECLARE_NAPI_METHOD(napi_getPrimaryMonitor){
     GLFWmonitor* monitor = glfwGetPrimaryMonitor();
-    RETURN_NAPI_NUMBER((uint64_t)monitor);
+    RETURN_NAPI_INT64((uint64_t)monitor);
 }
 
 napi_value glfwVideoModeToNapiValue(napi_env env, const GLFWvidmode* mode){
     napi_value returnValue;
     napi_value singleValue;
     NAPI_CALL_BASE(env, napi_create_object(env, &returnValue), returnValue);
-    NAPI_CALL_BASE(env, napi_create_number(env, mode->redBits, &singleValue), returnValue);
+    NAPI_CALL_BASE(env, napi_create_int32(env, mode->redBits, &singleValue), returnValue);
     NAPI_CALL_BASE(env, napi_set_named_property(env, returnValue, "redBits", singleValue), returnValue);
-    NAPI_CALL_BASE(env, napi_create_number(env, mode->greenBits, &singleValue), returnValue);
+    NAPI_CALL_BASE(env, napi_create_int32(env, mode->greenBits, &singleValue), returnValue);
     NAPI_CALL_BASE(env, napi_set_named_property(env, returnValue, "greenBits", singleValue), returnValue);
-    NAPI_CALL_BASE(env, napi_create_number(env, mode->blueBits, &singleValue), returnValue);
+    NAPI_CALL_BASE(env, napi_create_int32(env, mode->blueBits, &singleValue), returnValue);
     NAPI_CALL_BASE(env, napi_set_named_property(env, returnValue, "blueBits", singleValue), returnValue);
-    NAPI_CALL_BASE(env, napi_create_number(env, mode->height, &singleValue), returnValue);
+    NAPI_CALL_BASE(env, napi_create_int32(env, mode->height, &singleValue), returnValue);
     NAPI_CALL_BASE(env, napi_set_named_property(env, returnValue, "height", singleValue), returnValue);
-    NAPI_CALL_BASE(env, napi_create_number(env, mode->width, &singleValue), returnValue);
+    NAPI_CALL_BASE(env, napi_create_int32(env, mode->width, &singleValue), returnValue);
     NAPI_CALL_BASE(env, napi_set_named_property(env, returnValue, "width", singleValue), returnValue);
-    NAPI_CALL_BASE(env, napi_create_number(env, mode->refreshRate, &singleValue), returnValue);
+    NAPI_CALL_BASE(env, napi_create_int32(env, mode->refreshRate, &singleValue), returnValue);
     NAPI_CALL_BASE(env, napi_set_named_property(env, returnValue, "refreshRate", singleValue), returnValue);
     return returnValue;
 }
@@ -603,7 +603,7 @@ void onSigInt(int dummy){
     exit(0);
 }
 
-void Init(napi_env env, napi_value exports, napi_value module, void* priv) {
+napi_value Init(napi_env env, napi_value exports) {
     _env = env;
 
     napi_value val;
@@ -712,7 +712,7 @@ void Init(napi_env env, napi_value exports, napi_value module, void* priv) {
         DECLARE_NAPI_PROPERTY("swapBuffers", napi_swapBuffers)
     };
 
-    NAPI_CALL_RETURN_VOID(env, napi_define_properties(env, exports, 50, properties));
+    NAPI_CALL(env, napi_define_properties(env, exports, 50, properties));
 
 
 
@@ -960,6 +960,8 @@ void Init(napi_env env, napi_value exports, napi_value module, void* priv) {
 
     EXPORT_NAPI_CONST_NUMBER("CONNECTED", GLFW_CONNECTED);
     EXPORT_NAPI_CONST_NUMBER("DISCONNECTED", GLFW_DISCONNECTED);
+
+    return exports;
 }
 
 NAPI_MODULE(glfw, Init);
